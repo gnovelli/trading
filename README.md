@@ -137,4 +137,4 @@ I contributi sono benvenuti! Sentiti libero di aprire un **Pull Request** o segn
 
 ## 📜 **Licenza**
 
-Questo progetto è rilasciato sotto la licenza **MIT**.
+Questo progetto è rilasciato sotto la [Licenza MIT](LICENSE.md).
