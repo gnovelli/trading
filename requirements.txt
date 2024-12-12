@@ -1,1 +1,6 @@
 websocket-client
+gymnasium 
+numpy
+pandas
+matplotlib
+joblib

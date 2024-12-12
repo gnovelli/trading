@@ -9,7 +9,7 @@ import random
 from joblib import Parallel, delayed
 import matplotlib.pyplot as plt
 
-# Carica i dati dal file di log
+# Carica i dati dal file di log per più criptovalute
 def load_data(log_file):
     data = []
     with open(log_file, 'r') as file:
@@ -28,68 +28,80 @@ def load_data(log_file):
                 pass  # Ridotto debug
     return pd.DataFrame(data)
 
-# Environment personalizzato per il trading
+# Environment personalizzato per il trading con più criptovalute
 class CryptoTradingEnv(gym.Env):
     def __init__(self, data):
         super(CryptoTradingEnv, self).__init__()
         self.data = data
+        self.symbols = data['symbol'].unique()
         self.current_step = 0
         self.balance = 1000  # Capitale iniziale
-        self.crypto_holdings = 0
+        self.crypto_holdings = {symbol: 0 for symbol in self.symbols}
         self.total_value = self.balance
-        self.commission = 0.001  # Commissione dello 0.1%
+        self.commission = 0.0005  # Commissione ridotta allo 0.05%
         
         # Definizione degli spazi di azione e osservazione
-        self.action_space = spaces.Discrete(3)  # 0 = Hold, 1 = Buy, 2 = Sell
+        self.action_space = spaces.MultiDiscrete([3] * len(self.symbols))  # 0 = Hold, 1 = Buy, 2 = Sell per ciascuna crypto
         self.observation_space = spaces.Box(
-            low=0, high=np.inf, shape=(4,), dtype=np.float32
+            low=0, high=np.inf, shape=(len(self.symbols) * 4,), dtype=np.float32
         )
 
     def reset(self, seed=None):
         self.current_step = 0
         self.balance = 1000
-        self.crypto_holdings = 0
+        self.crypto_holdings = {symbol: 0 for symbol in self.symbols}
         self.total_value = self.balance
         return self._get_observation(), {}
 
     def _get_observation(self):
-        current_price = self.data.iloc[self.current_step]['price']
-        high = self.data.iloc[self.current_step]['high']
-        low = self.data.iloc[self.current_step]['low']
-        volume = self.data.iloc[self.current_step]['volume']
-        return np.array([current_price, high, low, volume], dtype=np.float32)
+        obs = []
+        for symbol in self.symbols:
+            symbol_data = self.data[self.data['symbol'] == symbol]
+            if self.current_step < len(symbol_data):
+                step_data = symbol_data.iloc[self.current_step]
+            else:
+                step_data = symbol_data.iloc[-1]  # Usa l'ultimo valore disponibile se si supera il limite
+            obs.extend([step_data['price'], step_data['high'], step_data['low'], step_data['volume']])
+        return np.array(obs, dtype=np.float32)
 
-    def step(self, action):
-        current_price = self.data.iloc[self.current_step]['price']
-        previous_price = current_price  # Inizializza previous_price per evitare l'errore
-        
-        # Azioni: 0 = Hold, 1 = Buy, 2 = Sell
-        if action == 1 and self.balance >= current_price * (1 + self.commission):
-            self.crypto_holdings += 1
-            self.balance -= current_price * (1 + self.commission)
-        elif action == 2 and self.crypto_holdings > 0:
-            self.crypto_holdings -= 1
-            self.balance += current_price * (1 - self.commission)
+    def step(self, actions):
+        rewards = 0
+        for i, symbol in enumerate(self.symbols):
+            symbol_data = self.data[self.data['symbol'] == symbol]
+            if self.current_step < len(symbol_data):
+                current_price = symbol_data.iloc[self.current_step]['price']
+            else:
+                current_price = symbol_data.iloc[-1]['price']  # Usa l'ultimo prezzo disponibile se si supera il limite
 
-        self.total_value = self.balance + self.crypto_holdings * current_price
+            action = actions[i]
+            
+            # Azioni: 0 = Hold, 1 = Buy, 2 = Sell
+            if action == 1 and self.balance >= current_price * (1 + self.commission):
+                self.crypto_holdings[symbol] += 1
+                self.balance -= current_price * (1 + self.commission)
+            elif action == 2 and self.crypto_holdings[symbol] > 0:
+                self.crypto_holdings[symbol] -= 1
+                self.balance += current_price * (1 - self.commission)
+
+        self.total_value = self.balance + sum(
+            self.crypto_holdings[s] * self.data[self.data['symbol'] == s].iloc[min(self.current_step, len(self.data[self.data['symbol'] == s]) - 1)]['price']
+            for s in self.symbols
+        )
+
         self.current_step += 1
-
-        done = self.current_step >= len(self.data) - 1
+        done = self.current_step >= len(self.data) // len(self.symbols) - 1
         
-        # Penalità per mantenere troppe criptovalute durante una tendenza al ribasso
-        trend_penalty = 0
-        if self.crypto_holdings > 0 and self.current_step > 0:
-            previous_price = self.data.iloc[self.current_step - 1]['price']
-            if current_price < previous_price:
-                trend_penalty = -self.crypto_holdings * abs(current_price - previous_price)
+        reward = (self.total_value - 1000) / 100  # Ricompensa basata sul profitto netto rispetto al capitale iniziale
         
-        reward = (self.total_value - (self.balance + self.crypto_holdings * previous_price)) + trend_penalty  # Ricompensa relativa con penalità
-        reward /= 1000  # Normalizzazione del reward
-
+        # Penalità per inattività
+        if all(action == 0 for action in actions):
+            reward -= 0.1
+        
         return self._get_observation(), reward, done, False, {}
 
     def render(self):
-        print(f"Step: {self.current_step}, Balance: {self.balance:.2f}, Holdings: {self.crypto_holdings}, Total Value: {self.total_value:.2f}")
+        holdings_str = ', '.join([f"{symbol}: {self.crypto_holdings[symbol]}" for symbol in self.symbols])
+        print(f"Step: {self.current_step}, Balance: {self.balance:.2f}, Holdings: {holdings_str}, Total Value: {self.total_value:.2f}")
 
 # Funzione per addestrare l'agente con Q-Learning
 def train_single_episode(env, q_table, alpha, gamma, epsilon):
@@ -98,29 +110,23 @@ def train_single_episode(env, q_table, alpha, gamma, epsilon):
     
     while not done:
         if random.uniform(0, 1) < epsilon:
-            action = env.action_space.sample()
+            actions = [env.action_space.sample()[i] for i in range(len(env.symbols))]
         else:
-            action = np.argmax(q_table[env.current_step])
+            actions = [np.argmax(q_table[env.current_step][i]) for i in range(len(env.symbols))]
 
-        next_state, reward, done, _, _ = env.step(action)
+        next_state, reward, done, _, _ = env.step(actions)
 
-        # Penalità aggiuntiva per azioni non produttive
-        if action == 0 and env.current_step > 0:
-            current_price = env.data.iloc[env.current_step]['price']
-            previous_price = env.data.iloc[env.current_step - 1]['price']
-            if current_price < previous_price:
-                reward -= 5
+        for i in range(len(env.symbols)):
+            q_table[env.current_step, i, actions[i]] += alpha * (
+                reward + gamma * np.max(q_table[env.current_step, i]) - q_table[env.current_step, i, actions[i]]
+            )
 
-        q_table[env.current_step, action] += alpha * (
-            reward + gamma * np.max(q_table[env.current_step]) - q_table[env.current_step, action]
-        )
-
-def train_agent(env, episodes=500, alpha=0.1, gamma=0.99, epsilon=0.1):
-    q_table = np.zeros((len(env.data), env.action_space.n))
+def train_agent(env, episodes=1000, alpha=0.1, gamma=0.99, epsilon=0.5):
+    q_table = np.random.uniform(low=-1, high=1, size=(len(env.data) // len(env.symbols), len(env.symbols), env.action_space.nvec[0]))
     epsilon_decay = epsilon
     for episode in range(episodes):
         train_single_episode(env, q_table, alpha, gamma, epsilon_decay)
-        epsilon_decay = max(0.01, epsilon_decay * 0.99)  # Decay di epsilon
+        epsilon_decay = max(0.01, epsilon_decay * 0.999)  # Decay più graduale
         if episode % 100 == 0:
             print(f"Completed Episode {episode}/{episodes}")
     return q_table
@@ -132,8 +138,8 @@ def test_agent(env, q_table):
     performance = []
 
     while not done:
-        action = np.argmax(q_table[env.current_step])
-        state, reward, done, _, _ = env.step(action)
+        actions = [np.argmax(q_table[env.current_step][i]) for i in range(len(env.symbols))]
+        state, reward, done, _, _ = env.step(actions)
         performance.append(env.total_value)
         env.render()
     
@@ -163,11 +169,10 @@ if __name__ == "__main__":
 
     while True:
         print("\n===== Inizio Training =====")
-        q_table = train_agent(env, episodes=200)
+        q_table = train_agent(env, episodes=1000)
         
         print("\n===== Inizio Testing =====")
         test_agent(env, q_table)
         
         print("\nTraining e Testing completati. Riinizio tra 10 secondi...\n")
         time.sleep(10)
-

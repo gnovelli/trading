@@ -10,6 +10,8 @@ CRYPTO_PAIRS = [
     "solusdt", "dotusdt", "dogeusdt", "maticusdt", "linkusdt"
 ]
 
+
+
 # URL del WebSocket di Binance per le coppie selezionate
 STREAM_URL = f"wss://stream.binance.com:9443/ws/{'/'.join([f'{pair}@ticker' for pair in CRYPTO_PAIRS])}"
 
