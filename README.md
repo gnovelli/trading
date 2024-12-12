@@ -76,7 +76,7 @@ sequenceDiagram
 
 ## 📖 **Documentazione Completa**
 
-Per una descrizione dettagliata di ciascun componente e del funzionamento del sistema, consulta la [Documentazione Completa](project_documentation_corrected.md).
+Per una descrizione dettagliata di ciascun componente e del funzionamento del sistema, consulta la [Documentazione Completa](project_documentation.md).
 
 ## ⚠️ **Disclaimer**
 
