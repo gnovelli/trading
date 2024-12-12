@@ -33,7 +33,8 @@ project/
 │-- trader.py
 │-- log/
 │   └── crypto_price_log.log
-└-- requirements.txt
+│-- requirements.txt
+└── DISCLAIMER.md
 ```
 
 ## 📊 **Diagrammi del Sistema**
@@ -73,50 +74,15 @@ sequenceDiagram
     Trader ->> Log: Registra risultati del trading
 ```
 
-### 3. **Architettura del Sistema**
-
-```mermaid
-classDiagram
-    class Observer {
-        +WebSocket Connection
-        +Log Data
-    }
-
-    class Log {
-        +Stored Data
-    }
-
-    class DataManager {
-        +Load Data
-        +Preprocess Data
-    }
-
-    class CryptoEnv {
-        +Define Actions
-        +Define Rewards
-    }
-
-    class Trainer {
-        +Train Agent
-        +Test Agent
-    }
-
-    class Trader {
-        +Coordinate Training
-        +Coordinate Testing
-    }
-
-    Observer --> Log
-    Log --> DataManager
-    DataManager --> CryptoEnv
-    Trainer --> CryptoEnv
-    Trader --> Trainer
-    Trader --> Log
-```
-
 ## 📖 **Documentazione Completa**
 
 Per una descrizione dettagliata di ciascun componente e del funzionamento del sistema, consulta la [Documentazione Completa](project_documentation_corrected.md).
+
+## ⚠️ **Disclaimer**
+
+Questo sistema è sviluppato a scopo didattico e di apprendimento. **Non esegue operazioni di trading reali, ma simula decisioni di trading.**
+
+Per ulteriori dettagli, leggi il [Disclaimer](DISCLAIMER.md).
 
 ## 💻 **Requisiti di Sistema**
 
