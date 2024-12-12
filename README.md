@@ -136,7 +136,7 @@ pip install -r requirements.txt
 ```plaintext
 websocket-client==1.2.1
 gymnasium==0.26.3
-numpy==1.21.2
+numpy==1.23
 pandas==1.3.3
 matplotlib==3.4.3
 joblib==1.0.1
