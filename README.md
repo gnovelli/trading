@@ -36,6 +36,84 @@ project/
 └-- requirements.txt
 ```
 
+## 📊 **Diagrammi del Sistema**
+
+### 1. **Panoramica del Sistema**
+
+```mermaid
+flowchart TD
+    observer[observer.py] --> log[crypto_price_log.log]
+    log --> data_manager[data_manager.py]
+    data_manager --> crypto_env[crypto_env.py]
+    crypto_env --> trainer[trainer.py]
+    trainer --> trader[trader.py]
+    trader --> crypto_env
+    trader --> log
+
+    classDef code fill:#f9f,stroke:#333,stroke-width:2px;
+    class observer,log,data_manager,crypto_env,trainer,trader code
+```
+
+### 2. **Flusso dei Dati**
+
+```mermaid
+sequenceDiagram
+    participant Observer as observer.py
+    participant Log as crypto_price_log.log
+    participant DataManager as data_manager.py
+    participant Env as crypto_env.py
+    participant Trainer as trainer.py
+    participant Trader as trader.py
+
+    Observer ->> Log: Scrive dati in tempo reale
+    Trader ->> DataManager: Carica dati
+    DataManager ->> Env: Prepara ambiente di trading
+    Trainer ->> Env: Addestra agente RL
+    Env ->> Trainer: Fornisce feedback/reward
+    Trader ->> Log: Registra risultati del trading
+```
+
+### 3. **Architettura del Sistema**
+
+```mermaid
+classDiagram
+    class Observer {
+        +WebSocket Connection
+        +Log Data
+    }
+
+    class Log {
+        +Stored Data
+    }
+
+    class DataManager {
+        +Load Data
+        +Preprocess Data
+    }
+
+    class CryptoEnv {
+        +Define Actions
+        +Define Rewards
+    }
+
+    class Trainer {
+        +Train Agent
+        +Test Agent
+    }
+
+    class Trader {
+        +Coordinate Training
+        +Coordinate Testing
+    }
+
+    Observer --> Log
+    Log --> DataManager
+    DataManager --> CryptoEnv
+    Trainer --> CryptoEnv
+    Trader --> Trainer
+    Trader --> Log
+```
+
 ## 📖 **Documentazione Completa**
 
 Per una descrizione dettagliata di ciascun componente e del funzionamento del sistema, consulta la [Documentazione Completa](project_documentation_corrected.md).
