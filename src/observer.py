@@ -33,8 +33,18 @@ def on_message(ws, message):
         data = json.loads(message)
         symbol = data.get("s")
         price = data.get("c")
+        high_price = data.get("h")
+        low_price = data.get("l")
+        volume = data.get("v")
         if symbol and price:
-            logging.info(f"{symbol} price: {price}")
+            log_message = json.dumps({
+                "symbol": symbol,
+                "price": price,
+                "high": high_price,
+                "low": low_price,
+                "volume": volume
+            })
+            logging.info(log_message)
     except Exception as e:
         logging.error(f"Error processing message: {e}")
 
