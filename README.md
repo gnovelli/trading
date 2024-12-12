@@ -1,7 +1,7 @@
 
 # 🚀 Sistema di Trading Algoritmico per Criptovalute
 
-Questo progetto è per la simulazione di trading algoritmico basato su **Reinforcement Learning** (RL) progettato per analizzare e tradare criptovalute in tempo reale.
+Questo progetto è per la simulazione di trading algoritmico basato su [**Reinforcement Learning** (RL)](reinforcement_learning.md), progettato per analizzare e tradare criptovalute in tempo reale.
 
 ## 📝 **Descrizione del Sistema**
 
