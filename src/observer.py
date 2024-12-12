@@ -4,13 +4,11 @@ import os
 import json
 import threading
 
-# Lista delle criptovalute da osservare (esempio con 10 coppie)
+# Lista delle criptovalute da osservare
 CRYPTO_PAIRS = [
     "btcusdt", "ethusdt", "bnbusdt", "adausdt", "xrpusdt",
     "solusdt", "dotusdt", "dogeusdt", "maticusdt", "linkusdt"
 ]
-
-
 
 # URL del WebSocket di Binance per le coppie selezionate
 STREAM_URL = f"wss://stream.binance.com:9443/ws/{'/'.join([f'{pair}@ticker' for pair in CRYPTO_PAIRS])}"
@@ -35,18 +33,18 @@ def on_message(ws, message):
         data = json.loads(message)
         symbol = data.get("s")
         price = data.get("c")
-        high_price = data.get("h")
-        low_price = data.get("l")
+        high = data.get("h")
+        low = data.get("l")
         volume = data.get("v")
         if symbol and price:
-            log_message = json.dumps({
+            log_entry = json.dumps({
                 "symbol": symbol,
                 "price": price,
-                "high": high_price,
-                "low": low_price,
+                "high": high,
+                "low": low,
                 "volume": volume
             })
-            logging.info(log_message)
+            logging.info(log_entry)
     except Exception as e:
         logging.error(f"Error processing message: {e}")
 
@@ -75,9 +73,7 @@ def start_websocket():
 
 if __name__ == "__main__":
     try:
-        # Avvia il WebSocket in un thread separato
         threading.Thread(target=start_websocket, daemon=True).start()
-        # Mantieni il programma in esecuzione
         input("Premi Ctrl+C per interrompere il programma...\n")
     except KeyboardInterrupt:
         print("Programma interrotto dall'utente.")
