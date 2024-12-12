@@ -1,4 +1,3 @@
-
 # 📄 Documentazione del Sistema di Trading Algoritmico
 
 ## 1. **Introduzione**
@@ -204,9 +203,3 @@ def plot_performance(performance):
     plt.title('Trading Performance')
     plt.show()
 ```
-
----
-
-## 📥 **Download del File**
-
-Puoi scaricare il file completo [qui](project_documentation.md).
