@@ -138,3 +138,11 @@ I contributi sono benvenuti! Sentiti libero di aprire un **Pull Request** o segn
 ## 📜 **Licenza**
 
 Questo progetto è rilasciato sotto la [Licenza MIT](LICENSE.md).
+
+## 🌱 **Prossimi Sviluppi**
+
+Il progetto offre una solida base per esplorare il trading algoritmico con Reinforcement Learning, ma ci sono molte opportunità per miglioramenti e nuove funzionalità.
+
+Per scoprire possibili evoluzioni del sistema, consulta il documento sui [Lavori Futuri e Miglioramenti](future_work.md).
+
+🚀 **Continua a esplorare, sperimentare e innovare!** 🚀
