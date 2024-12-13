@@ -3,41 +3,52 @@ import matplotlib.pyplot as plt
 
 def train_agent(env, episodes=1000, alpha=0.1, gamma=0.99, epsilon=0.5):
     """
-    Addestra l'agente utilizzando l'algoritmo Q-Learning.
+    Trains the agent using the Q-Learning algorithm.
 
-    :param env: L'ambiente di trading.
-    :param episodes: Numero di episodi di training.
-    :param alpha: Tasso di apprendimento.
-    :param gamma: Fattore di sconto per le ricompense future.
-    :param epsilon: Probabilità di esplorazione iniziale.
-    :return: Q-Table addestrata.
+    :param env: The trading environment.
+    :param episodes: Number of training episodes.
+    :param alpha: Learning rate.
+    :param gamma: Discount factor for future rewards.
+    :param epsilon: Initial exploration probability.
+    :return: Trained Q-Table.
     """
-    q_table = np.random.uniform(low=-1, high=1, size=(len(env.data) // len(env.symbols), len(env.symbols), env.action_space.nvec[0]))
+    # Initialize Q-Table with random values between -1 and 1
+    q_table = np.random.uniform(
+        low=-1, 
+        high=1, 
+        size=(len(env.data) // len(env.symbols), len(env.symbols), env.action_space.nvec[0])
+    )
+    
+    # Decay factor for epsilon to reduce exploration over time
     epsilon_decay = epsilon
 
     for episode in range(episodes):
-        state, _ = env.reset()
+        state, _ = env.reset()  # Reset environment at the start of each episode
         done = False
 
         while not done:
             actions = []
+            # Choose actions for each symbol based on epsilon-greedy policy
             for i in range(len(env.symbols)):
                 if np.random.uniform(0, 1) < epsilon_decay:
-                    action = env.action_space.sample()[i]
+                    action = env.action_space.sample()[i]  # Explore: random action
                 else:
-                    action = np.argmax(q_table[env.current_step][i])
+                    action = np.argmax(q_table[env.current_step][i])  # Exploit: best-known action
                 actions.append(action)
 
+            # Take a step in the environment
             next_state, reward, done, _, _ = env.step(actions)
 
-            # Aggiornamento della Q-Table
+            # Update Q-Table using the Bellman equation
             for i in range(len(env.symbols)):
                 q_table[env.current_step][i][actions[i]] += alpha * (
                     reward + gamma * np.max(q_table[env.current_step][i]) - q_table[env.current_step][i][actions[i]]
                 )
 
+        # Decay epsilon to reduce exploration over time, with a minimum threshold
         epsilon_decay = max(0.01, epsilon_decay * 0.999)
 
+        # Print progress every 100 episodes
         if episode % 100 == 0:
             print(f"Completed Episode {episode}/{episodes}")
 
@@ -45,31 +56,33 @@ def train_agent(env, episodes=1000, alpha=0.1, gamma=0.99, epsilon=0.5):
 
 def test_agent(env, q_table):
     """
-    Testa l'agente utilizzando la Q-Table addestrata e visualizza le performance.
+    Tests the agent using the trained Q-Table and visualizes performance.
 
-    :param env: L'ambiente di trading.
-    :param q_table: La Q-Table addestrata.
+    :param env: The trading environment.
+    :param q_table: The trained Q-Table.
     """
-    state, _ = env.reset()
+    state, _ = env.reset()  # Reset environment before testing
     done = False
-    performance = []
+    performance = []  # List to track total portfolio value at each step
 
     while not done:
+        # Select the best action for each symbol based on the Q-Table
         actions = [np.argmax(q_table[env.current_step][i]) for i in range(len(env.symbols))]
         state, reward, done, _, _ = env.step(actions)
-        performance.append(env.total_value)
-        env.render()
+        performance.append(env.total_value)  # Record the total portfolio value
+        env.render()  # Print the current state of the environment
 
+    # Plot the performance after testing
     plot_performance(performance)
 
 def plot_performance(performance):
     """
-    Visualizza un grafico delle performance dell'agente durante il testing.
+    Plots the agent's performance during testing.
 
-    :param performance: Lista dei valori totali del portafoglio a ogni step.
+    :param performance: List of total portfolio values at each step.
     """
-    plt.plot(performance)
-    plt.xlabel('Step')
-    plt.ylabel('Total Value')
-    plt.title('Trading Performance')
-    plt.show()
+    plt.plot(performance)  # Plot the performance values over time
+    plt.xlabel('Step')     # Label for the x-axis
+    plt.ylabel('Total Value')  # Label for the y-axis
+    plt.title('Trading Performance')  # Title of the plot
+    plt.show()  # Display the plot
