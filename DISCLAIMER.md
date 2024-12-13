@@ -1,14 +1,16 @@
 
 ## ⚠️ **Disclaimer**
 
-Questo sistema di trading algoritmico è sviluppato **esclusivamente per finalità didattiche e di apprendimento** nell'ambito del **Reinforcement Learning**. Il sistema **non esegue operazioni di trading reali**, ma **simula decisioni di trading** basate su un algoritmo di Reinforcement Learning.
+This algorithmic trading system is developed **exclusively for educational and learning purposes** in the context of **Reinforcement Learning**. The system **does not perform real trading operations** but **simulates trading decisions** based on a Reinforcement Learning algorithm.
 
-Il codice fornisce una soluzione di base per comprendere le dinamiche dei sistemi di trading algoritmico e può servire come punto di partenza per sviluppi futuri.
+The code provides a basic solution to understand the dynamics of algorithmic trading systems and may serve as a starting point for future developments.
 
-### ❗ **Avvertenze**
+### ❗ **Warnings**
 
-- Questo sistema è una simulazione e **non interagisce con piattaforme di trading reali**.
-- Le decisioni prese dal sistema sono il risultato di un algoritmo di Reinforcement Learning e non rappresentano consigli o strategie di investimento reali.
-- Gli sviluppatori e i contributori del progetto **non si assumono alcuna responsabilità** per l'utilizzo improprio del codice.
+- This system is a simulation and **does not interact with real trading platforms**.
+- The decisions made by the system are the result of a Reinforcement Learning algorithm and do not represent actual investment advice or strategies.
+- The developers and contributors of the project **assume no responsibility** for the misuse of the code.
 
-**Si consiglia di utilizzare questo sistema solo per scopi di studio e ricerca.**
+**It is recommended to use this system for study and research purposes only.**
+
+
