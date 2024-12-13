@@ -1,28 +1,27 @@
+# 🚀 **Algorithmic Cryptocurrency Trading System**
 
-# 🚀 Sistema di Trading Algoritmico per Criptovalute
+This project is for simulating algorithmic trading based on [**Reinforcement Learning** (RL)](reinforcement_learning.md), designed to analyze and trade cryptocurrencies in real time.
 
-Questo progetto è per la simulazione di trading algoritmico basato su [**Reinforcement Learning** (RL)](reinforcement_learning.md), progettato per analizzare e tradare criptovalute in tempo reale.
+## 📝 **System Description**
 
-## 📝 **Descrizione del Sistema**
-
-Il sistema è suddiviso in diversi componenti per garantire una chiara separazione delle responsabilità:
+The system is divided into several components to ensure clear separation of responsibilities:
 
 1. **observer.py**:  
-   Si connette al WebSocket di Binance per ricevere dati in tempo reale e li registra in un file di log.
+   Connects to the Binance WebSocket to receive real-time data and logs it to a file.
 
 2. **data_manager.py**:  
-   Carica e pre-processa i dati dal file di log generato.
+   Loads and preprocesses the data from the generated log file.
 
 3. **crypto_env.py**:  
-   Definisce un ambiente personalizzato di trading utilizzato dall'agente di Reinforcement Learning.
+   Defines a custom trading environment used by the Reinforcement Learning agent.
 
 4. **trainer.py**:  
-   Contiene le funzioni per l'addestramento e il testing dell'agente.
+   Contains functions for training and testing the agent.
 
 5. **trader.py**:  
-   Coordina l'addestramento e il testing continuo dell'agente di trading.
+   Coordinates the continuous training and testing of the trading agent.
 
-## 📂 **Struttura del Progetto**
+## 📂 **Project Structure**
 
 ```
 project/
@@ -37,9 +36,9 @@ project/
 └── DISCLAIMER.md
 ```
 
-## 📊 **Diagrammi del Sistema**
+## 📊 **System Diagrams**
 
-### 1. **Panoramica del Sistema**
+### 1. **System Overview**
 
 ```mermaid
 flowchart TD
@@ -55,7 +54,7 @@ flowchart TD
     class observer,log,data_manager,crypto_env,trainer,trader code
 ```
 
-### 2. **Flusso dei Dati**
+### 2. **Data Flow**
 
 ```mermaid
 sequenceDiagram
@@ -66,28 +65,28 @@ sequenceDiagram
     participant Trainer as trainer.py
     participant Trader as trader.py
 
-    Observer ->> Log: Scrive dati in tempo reale
-    Trader ->> DataManager: Carica dati
-    DataManager ->> Env: Prepara ambiente di trading
-    Trainer ->> Env: Addestra agente RL
-    Env ->> Trainer: Fornisce feedback/reward
-    Trader ->> Log: Registra risultati del trading
+    Observer ->> Log: Writes real-time data
+    Trader ->> DataManager: Loads data
+    DataManager ->> Env: Prepares trading environment
+    Trainer ->> Env: Trains RL agent
+    Env ->> Trainer: Provides feedback/reward
+    Trader ->> Log: Logs trading results
 ```
 
-## 📖 **Documentazione Completa**
+## 📖 **Full Documentation**
 
-Per una descrizione dettagliata di ciascun componente e del funzionamento del sistema, consulta la [Documentazione Completa](project_documentation.md).
+For a detailed description of each component and system functionality, refer to the [Full Documentation](project_documentation.md).
 
 ## ⚠️ **Disclaimer**
 
-Questo sistema è sviluppato a scopo didattico e di apprendimento. **Non esegue operazioni di trading reali, ma simula decisioni di trading.**
+This system is developed for educational and learning purposes. **It does not perform real trading operations but simulates trading decisions.**
 
-Per ulteriori dettagli, leggi il [Disclaimer](DISCLAIMER.md).
+For more details, read the [Disclaimer](DISCLAIMER.md).
 
-## 💻 **Requisiti di Sistema**
+## 💻 **System Requirements**
 
 - **Python 3.10**
-- **Librerie**:
+- **Libraries**:
   - `websocket-client`
   - `gymnasium`
   - `numpy`
@@ -95,54 +94,54 @@ Per ulteriori dettagli, leggi il [Disclaimer](DISCLAIMER.md).
   - `matplotlib`
   - `joblib`
 
-## 🚀 **Installazione**
+## 🚀 **Installation**
 
-1. Clona il repository:
+1. Clone the repository:
 
    ```bash
-   git clone https://github.com/tuo-username/trading-algoritmico.git
-   cd trading-algoritmico
+   git clone https://github.com/your-username/algorithmic-trading.git
+   cd algorithmic-trading
    ```
 
-2. Crea un ambiente virtuale e attivalo:
+2. Create and activate a virtual environment:
 
    ```bash
    python -m venv .venv
-   source .venv/bin/activate  # Su Windows: .venv\Scripts\activate
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
 
-3. Installa le dipendenze:
+3. Install the dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-## ▶️ **Esecuzione del Sistema**
+## ▶️ **Running the System**
 
-1. **Avvia il `observer.py`** per raccogliere i dati:
+1. **Start `observer.py`** to collect data:
 
    ```bash
    python observer.py
    ```
 
-2. **Avvia il `trader.py`** per addestrare e testare l'agente:
+2. **Start `trader.py`** to train and test the agent:
 
    ```bash
    python trader.py
    ```
 
-## 🤝 **Contributi**
+## 🤝 **Contributions**
 
-I contributi sono benvenuti! Sentiti libero di aprire un **Pull Request** o segnalare un problema tramite **Issues**.
+Contributions are welcome! Feel free to open a **Pull Request** or submit an issue via **Issues**.
 
-## 📜 **Licenza**
+## 📜 **License**
 
-Questo progetto è rilasciato sotto la [Licenza MIT](LICENSE.md).
+This project is released under the [MIT License](LICENSE.md).
 
-## 🌱 **Prossimi Sviluppi**
+## 🌱 **Future Developments**
 
-Il progetto offre una solida base per esplorare il trading algoritmico con Reinforcement Learning, ma ci sono molte opportunità per miglioramenti e nuove funzionalità.
+This project provides a solid foundation for exploring algorithmic trading with Reinforcement Learning, but there are many opportunities for improvements and new features.
 
-Per scoprire possibili evoluzioni del sistema, consulta il documento sui [Lavori Futuri e Miglioramenti](future_work.md).
+To learn about potential system enhancements, refer to the [Future Work and Improvements](future_work.md) document.
 
-🚀 **Continua a esplorare, sperimentare e innovare!** 🚀
+🚀 **Keep exploring, experimenting, and innovating!** 🚀
