@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def train_agent(env, episodes=1000, alpha=0.1, gamma=0.99, epsilon=0.5):
+def train_agent(env, episodes=1000, alpha=0.1, gamma=0.5, epsilon=0.5):
     """
-    Addestra l'agente utilizzando l'algoritmo Q-Learning.
+    Addestra l'agente utilizzando l'algoritmo Q-Learning con strategia greedy.
 
     :param env: L'ambiente di trading.
     :param episodes: Numero di episodi di training.
@@ -12,7 +12,10 @@ def train_agent(env, episodes=1000, alpha=0.1, gamma=0.99, epsilon=0.5):
     :param epsilon: Probabilità di esplorazione iniziale.
     :return: Q-Table addestrata.
     """
-    q_table = np.random.uniform(low=-1, high=1, size=(len(env.data) // len(env.symbols), len(env.symbols), env.action_space.nvec[0]))
+    q_table = np.random.uniform(
+        low=0, high=1,
+        size=(len(env.data) // len(env.symbols), len(env.symbols), env.action_space.nvec[0])
+    )
     epsilon_decay = epsilon
 
     for episode in range(episodes):
@@ -30,16 +33,17 @@ def train_agent(env, episodes=1000, alpha=0.1, gamma=0.99, epsilon=0.5):
 
             next_state, reward, done, _, _ = env.step(actions)
 
-            # Aggiornamento della Q-Table
             for i in range(len(env.symbols)):
                 q_table[env.current_step][i][actions[i]] += alpha * (
                     reward + gamma * np.max(q_table[env.current_step][i]) - q_table[env.current_step][i][actions[i]]
                 )
 
-        epsilon_decay = max(0.01, epsilon_decay * 0.999)
+        epsilon_decay = max(0.01, epsilon_decay * 0.995)
 
-        if episode % 100 == 0:
-            print(f"Completed Episode {episode}/{episodes}")
+        # Stampa un riepilogo ogni 50 episodi
+        if (episode + 1) % 50 == 0:
+            holdings_str = ", ".join([f"{symbol}: {amount:.2f}" for symbol, amount in env.crypto_holdings.items()])
+            print(f"Episodio {episode + 1}/{episodes} | Saldo: {env.balance:.2f} | Valore Totale: {env.total_value:.2f} | {holdings_str}")
 
     return q_table
 
@@ -50,6 +54,7 @@ def test_agent(env, q_table):
     :param env: L'ambiente di trading.
     :param q_table: La Q-Table addestrata.
     """
+    env.log_transactions = True  # Abilita il logging delle transazioni durante il test
     state, _ = env.reset()
     done = False
     performance = []
