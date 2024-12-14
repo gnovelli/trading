@@ -78,3 +78,4 @@ def plot_performance(performance):
     plt.ylabel('Total Value')
     plt.title('Trading Performance')
     plt.show()
+
